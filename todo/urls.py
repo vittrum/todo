@@ -15,10 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from users.api.urls import router as user_router
+from tasks.api.urls import router as task_router
+from shopping.api.urls import router as shopping_router
+from budget.api.urls import router as budget_router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('budget/', include('budget.urls')),
-    path('tasks/', include('tasks.urls')),
-    path('shopping/', include('shopping.urls')),
 ]
+
+urlpatterns += user_router.urls
+urlpatterns += task_router.urls
+urlpatterns += shopping_router.urls
+urlpatterns += budget_router.urls

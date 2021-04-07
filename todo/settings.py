@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'budget',
     'shopping',
     'tasks',
+    'users',
 ]
 
 MIDDLEWARE = [
