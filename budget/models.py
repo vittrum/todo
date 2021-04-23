@@ -1,15 +1,13 @@
 from django.db import models
 
-# Create your models here.
-from users.models import Family
+from users.models import Member
 
 
 class Budget(models.Model):
     name = models.CharField(max_length=50)
-    content = models.CharField(max_length=300, null=True, blank=True)
-    date_from = models.DateField()
-    date_to = models.DateField()
-    participant = models.ForeignKey(Family, on_delete=models.CASCADE)
+    user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    summ = models.IntegerField()
+    date_granted = models.DateField(auto_now_add=True)
 
     class Meta:
         db_table = 'budgets'
