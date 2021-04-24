@@ -140,62 +140,81 @@
     height: 5px; /* Толщина линии */
    }
 
+    .container {
+      padding-left: 165px;
+    }
+
   </style>
 </head>
 <body>
 <div class="sidenav">
-  <a href="#Users">Users</a>
+  <a id="members" href="#">Members</a>
   <hr>
-  <a href="#Tasks">Tasks</a>
+  <a id="tasks" href="#">Tasks</a>
   <hr>
-  <a href="#Shopping">Shopping</a>
+  <a id="shopping" href="#">Shopping</a>
   <hr>
-  <a href="#Budget">Budget</a>
+  <a id="budget" href="#">Budget</a>
 </div>
 
 <div class="container">
-  <div id="Tasks">
+  <div id="tasks-window" class="d-none">
     <div id="AddTask" class="header">
       <h2>Tasks</h2>
       <input type="text" id="new_task" placeholder="task...">
-      <span onclick="" class="addBtn">Add</span>
+      <input type="text" id="task_info" placeholder="additional info...">
+      <div>
+        <select id="task_priority">
+          <option>high</option>
+          <option>medium</option>
+          <option>low</option>
+        </select>
+      </div>
+      <span onclick="add_task()" class="addBtn">Add</span>
     </div>
 
     <ul id="TaskList">
     </ul>
   </div>
 
-  <div id="Shopping">
+  <div id="shopping-window" class="d-none">
     <div id="AddPosition" class="header">
       <h2>Shopping list</h2>
-      <input type="text" id="new_position" placeholder="task...">
-      <span onclick="" class="addBtn">Add</span>
+      <input type="text" id="position_name" placeholder="task...">
+      <input type="text" id="position_info"  placeholder="additional info...">
+      <input type="number" id="position_price" placeholder="price">
+      <span onclick="add_position()" class="addBtn">Add</span>
     </div>
 
     <ul id="ShoppingList">
     </ul>
   </div>
 
-  <div id="Members">
+  <div id="members-window" class="d-none">
     <div id="AddMember" class="header">
       <h2>Members</h2>
       <input type="text" id="member_name" placeholder="name...">
       <input type="text" id="member_lastname" placeholder="last name...">
       <input type="number" id="member_earnings" placeholder="earnings...">
-      <span onclick="" class="addBtn">Add</span>
+      <span onclick="add_user()" class="addBtn">Add</span>
     </div>
 
     <ul id="MemberList">
     </ul>
   </div>
 
-  <div id="Budget">
+  <div id="budget-window" class="d-none">
     <div id="AddBudget" class="header">
       <h2>Budget</h2>
-      <input type="text" id="member_name" placeholder="short title...">
+      <input type="text" id="title_name" placeholder="short title...">
       <input type="number" id="summ_id" placeholder="summ...">
-      <input type="number" id="member_id" placeholder="member...">
-      <span onclick="" class="addBtn">Add</span>
+      <div>
+        <select id="member_id">
+          <option>1</option>
+          <option>2</option>
+        </select>
+      </div>
+      <span onclick="add_budget_position()" class="addBtn">Add</span>
     </div>
 
     <ul id="BudgetList">
@@ -203,13 +222,51 @@
   </div>
 </div>
   <script>
+
+    jQuery(document).ready(function($) {
+
+      get_users ();
+      get_tasks ();
+      get_budget();
+      get_shopping_list();
+
+      $('#members').click(function () {
+        $('#members-window').removeClass('d-none');
+        $('#tasks-window, #shopping-window, #budget-window').addClass('d-none');
+      })
+
+      $('#tasks').click(function () {
+        $('#tasks-window').removeClass('d-none');
+        $('#members-window, #shopping-window, #budget-window').addClass('d-none');
+      })
+
+      $('#shopping').click(function () {
+        $('#shopping-window').removeClass('d-none');
+        $('#tasks-window, #members-window, #budget-window').addClass('d-none');
+      })
+
+      $('#budget').click(function () {
+        $('#budget-window').removeClass('d-none');
+        $('#tasks-window, #shopping-window, #members-window').addClass('d-none');
+      })
+    });
+
     /* members */
     function get_users (){
       $.ajax({
         type: "GET",
         url: 'http://127.0.0.1:8000/user/',
         success: function (data) {
-           alert(data)
+           window.users = data;
+          $('#MemberList').empty();
+          $('select#member_id').empty();
+          for (let i=0; i < data.length; i++) {
+            let li = '<li onclick="delete_user(' + data[i].id + ')">' + data[i].name + '</li>';
+            $('#MemberList').append(li);
+
+            let us = '<option>' + data[i].id + '</option>';
+            $('select#member_id').append(us);
+          }
         }
       })
     }
@@ -230,13 +287,12 @@
         type: "POST",
         url: 'http://127.0.0.1:8000/user/',
         data: {
-          name: 'name',
-          lastname: 'lastname',
-          earnings: 200
+          name: $("#member_name").val(),
+          lastname: $("#member_lastname").val(),
+          earnings: $("#member_earnings").val()
         },
         success: function (data) {
-          get_users()
-          console.log(data)
+          get_users();
         }
       })
     }
@@ -247,14 +303,14 @@
         type: "POST",
         url: 'http://127.0.0.1:8000/tasks/',
         data: {
-          name: "teaching",
-          content: "new stuff",
-          priority: "low",
-          assign_date: "2021-04-23"
+          name: $('input#new_task').val(),
+          content: $('input#task_info').val(),
+          priority: $('select#task_priority').val(),
         },
         success: function (data) {
-          get_tasks()
-          console.log(data)
+          get_tasks();
+          console.log(data);
+
         }
       })
     }
@@ -264,7 +320,11 @@
         type: "GET",
         url: 'http://127.0.0.1:8000/tasks/',
         success: function (data) {
-           alert(data)
+          $('#TaskList').empty();
+           for (let i=0; i< data.length; i++) {
+             let li = '<li onclick="delete_task(' + data[i].id + ')">' + data[i].name + '</li>';
+             $('#TaskList').append(li);
+           }
         }
       })
     }
@@ -274,8 +334,7 @@
         type: "DELETE",
         url: 'http://127.0.0.1:8000/tasks/' + taskId + '/',
         success: function (data) {
-          console.log(data)
-          get_users();
+          get_tasks();
         }
       })
     }
@@ -286,13 +345,13 @@
         type: "POST",
         url: 'http://127.0.0.1:8000/tasks/',
         data: {
-            "name": "Bread",
-            "info": "rzhanoi",
-            "price": "20.00"
+            "name": $('input#position_name').val(),
+            "info": $('input#position_info').val(),
+            "price": $('input#position_price').val()
         },
         success: function (data) {
-          get_shopping_list()
-          console.log(data)
+          get_shopping_list();
+          console.log(data);
         }
       })
     }
@@ -302,7 +361,11 @@
         type: "GET",
         url: 'http://127.0.0.1:8000/purchases/',
         success: function (data) {
-           alert(data)
+          $('#ShoppingList').empty();
+           for (let i=0; i < data.length; i++) {
+             let li = '<li onclick="delete_position(' + data[i].id + ')">' + data[i].name + ' (' + data[i].info + ') with price: ' + data[i].price +'</li>';
+             $('#ShoppingList').append(li);
+           }
         },
       })
     }
@@ -312,7 +375,7 @@
         type: "DELETE",
         url: 'http://127.0.0.1:8000/purchases/' + posId + '/',
         success: function (data) {
-          console.log(data)
+          console.log(data);
           get_shopping_list();
         }
       })
@@ -324,13 +387,13 @@
         type: "POST",
         url: 'http://127.0.0.1:8000/budget/',
         data: {
-            "name": "Bread",
-            "info": "rzhanoi",
-            "price": "20.00"
+            "name": $('#title_name').val(),
+            "summ": $('#summ_id').val(),
+            "user": $('#member_id').val()
         },
         success: function (data) {
-          get_shopping_list()
-          console.log(data)
+          get_budget();          
+          console.log(data);
         }
       })
     }
@@ -340,7 +403,12 @@
         type: "GET",
         url: 'http://127.0.0.1:8000/budget/',
         success: function (data) {
-           alert(data)
+          window.budget = data;
+          $('#BudgetList').empty();
+          for (let i=0; i < data.length; i++) {
+            let li = '<li onclick="delete_budget_position(' + data[i].id + ')">' + data[i].name + ' with ' + data[i].summ + '$ to spend.' + '</li>';
+            $('#BudgetList').append(li);
+          }
         },
       })
     }
