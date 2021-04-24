@@ -176,7 +176,7 @@
     </ul>
   </div>
 
-  <div id="Users">
+  <div id="Members">
     <div id="AddMember" class="header">
       <h2>Members</h2>
       <input type="text" id="member_name" placeholder="name...">
@@ -186,6 +186,19 @@
     </div>
 
     <ul id="MemberList">
+    </ul>
+  </div>
+
+  <div id="Budget">
+    <div id="AddBudget" class="header">
+      <h2>Budget</h2>
+      <input type="text" id="member_name" placeholder="short title...">
+      <input type="number" id="summ_id" placeholder="summ...">
+      <input type="number" id="member_id" placeholder="member...">
+      <span onclick="" class="addBtn">Add</span>
+    </div>
+
+    <ul id="BudgetList">
     </ul>
   </div>
 </div>
@@ -246,19 +259,12 @@
       })
     }
 
-    function get_tasks() {
+    function get_tasks (){
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: 'http://127.0.0.1:8000/tasks/',
-        data: {
-          name: "teaching",
-          content: "new stuff",
-          priority: "low",
-          assign_date: "2021-04-23"
-        },
         success: function (data) {
-          get_tasks()
-          console.log(data)
+           alert(data)
         }
       })
     }
@@ -275,47 +281,77 @@
     }
 
     /* shopping */
-    function add_purchase() {
+    function add_position() {
       $.ajax({
         type: "POST",
         url: 'http://127.0.0.1:8000/tasks/',
         data: {
-          name: "teaching",
-          content: "new stuff",
-          priority: "low",
-          assign_date: "2021-04-23"
+            "name": "Bread",
+            "info": "rzhanoi",
+            "price": "20.00"
         },
         success: function (data) {
-          get_tasks()
+          get_shopping_list()
           console.log(data)
         }
       })
     }
 
-    function get_tasks() {
+    function get_shopping_list() {
       $.ajax({
-        type: "POST",
-        url: 'http://127.0.0.1:8000/tasks/',
-        data: {
-          name: "teaching",
-          content: "new stuff",
-          priority: "low",
-          assign_date: "2021-04-23"
-        },
+        type: "GET",
+        url: 'http://127.0.0.1:8000/purchases/',
         success: function (data) {
-          get_tasks()
-          console.log(data)
-        }
+           alert(data)
+        },
       })
     }
 
-    function delete_task(taskId) {
+    function delete_position(posId) {
       $.ajax({
         type: "DELETE",
-        url: 'http://127.0.0.1:8000/tasks/' + taskId + '/',
+        url: 'http://127.0.0.1:8000/purchases/' + posId + '/',
         success: function (data) {
           console.log(data)
-          get_users();
+          get_shopping_list();
+        }
+      })
+    }
+
+    /* budget */
+    function add_budget_position() {
+      $.ajax({
+        type: "POST",
+        url: 'http://127.0.0.1:8000/budget/',
+        data: {
+            "name": "Bread",
+            "info": "rzhanoi",
+            "price": "20.00"
+        },
+        success: function (data) {
+          get_shopping_list()
+          console.log(data)
+        }
+      })
+    }
+
+    function get_budget() {
+      $.ajax({
+        type: "GET",
+        url: 'http://127.0.0.1:8000/budget/',
+        success: function (data) {
+           alert(data)
+        },
+      })
+    }
+
+    function delete_budget_position(posId) {
+      $.ajax({
+        type: "DELETE",
+        url: 'http://127.0.0.1:8000/budget/' + posId + '/',
+        success: function (data) {
+          console.log(data)
+          get_budget();
         }
       })
     }
